@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Material Icons + Materialize CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <?!= include("Tracking-CSS"); ?> 
+    </head>
+
+  <body>  
+
+<div class="main-content">
+  <!-- Usuario -->
+  <div class="section">
+    <div class="user-row">
+      <i id="iSession" class="material-icons left">account_circle</i>
+      <strong id="uname">Welcome:</strong> 
+      <span id="usuarioActual">Cargando...</span>
+</div>
+
+    <!-- Encabezado -->
+<nav>
+  <div class="nav-wrapper container">
+    <img id="logo"/>
+    <h1 id="title">TaskMaster - Out Of Shuffle</h1>
+
+    <!-- Cronómetro -->
+ <div class="container-crono">
+  <div class="right-container">
+    <ol class="right">
+      <span id="TS">Time Spent:</span>
+      <div id="cronometro">00:00:00</div><hr>
+      <button class="glow-on-hover" id="startBtn" onclick="iniciar()">
+        <i id="iiniciar" class="material-icons left">play_arrow</i>INICIAR
+      </button>
+      <button id="stopBtn" class="glow-on-hover" onclick="detener()">
+        <i id="iparar" class="material-icons left">stop</i>FINALIZAR
+      </button>
+       <div id="registros"class="row"></div>
+        <p id="mensaje" class="align-right">
+      <i id="mensaje-icono" class="circle-icon left"></i>
+        <span id="mensaje-texto"></span>
+         </p>
+    </ol>
+    </div>
+   </div>
+  </div>
+ </div>
+</nav>
+
+      <!-- Formulario de datos -->
+  <div class="container"> <br>
+    <h3 id="Team" class="center-align" >Internal Operations Tracking</h3><hr><br>
+      <!-- UUID -->
+    <div class="section">
+    <div class="row">
+      <div class="input-field col s6">
+      <input id="uuid" type="text" placeholder="Enter the customer ID" required disabled>
+      <i id="iuid" class="material-icons prefix purple-darken-3">account_circle</i>
+      <label id="lcid">Customer ID</label>
+      </div>
+        <!-- Squad -->
+      <div class="input-field col s6">
+      <i id= "isq" class="material-icons prefix purple-darken-3">list</i>
+      <select id="squad" required disabled>
+        <option id="NoSquad" value="" selected disabled>Select Your Squad</option>
+        <option value="Collections">Collections</option>
+        <option value="Credit">Credit</option>
+        <option value="Cuenta">Cuenta+</option>
+        <option value="Engagement">Engagement</option>
+        <option value="Lifecycle">Lifecycle</option>
+        <option value="Outbound">Outbound</option>
+      </select>
+      <label id="sq" for="squad">Squad</label>
+    </div>
+  </div>
+  </div>
+
+      <!-- Tipo de Job -->
+      <br><h4 class="center-align">Tipo de Job</h4><hr>
+      <div class="wrapper" id="box">
+      <div class="section">
+        <div class="row-box">
+          <form id="tipoJob" class="col s12">
+            <div class="row-box">
+              <div class="column">
+              <div id="tag" class="btn-small z-depth-3">
+                <i id="ijob" class="material-icons left">money_off</i>Collections
+              </div>
+              <br>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="Discount"/><span class="deep-purple-text text-darken-5" >Discount</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="Guardia"/><span class="deep-purple-text text-darken-5" >Guardia</span></label></p>
+              </div>
+              <div class="column">
+                <div id="tag" class="btn-small z-depth-3">
+                <i id="ijob" class="material-icons left">credit_card</i>Credit
+              </div> 
+              <br>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="MSI"/><span class="deep-purple-text text-darken-5">MSI</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="Credit Adjustment"/><span class="deep-purple-text text-darken-5">CC Adjustment</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="Bugs FINS"/><span class="deep-purple-text text-darken-5">Bugs FINS</span></label></p>
+              </div>
+              <div class="column">
+                 <div id="tag" class="btn-small z-depth-3">
+                <i id="ijob" class="material-icons left">monetization_on</i> Cuenta +
+              </div>
+              <br>
+              <p><label><input class="with-gap"name="jobType"type="radio" value="Ask Pay"/><span class="deep-purple-text text-darken-5">Ask Pay</span></label></p>
+              <p><label><input class="with-gap"name="jobType"type="radio" value="Payments"/><span class="deep-purple-text text-darken-5">Payments</span></label></p>
+              <p><label><input class="with-gap"name="jobType"type="radio" value="SRF"/><span class="deep-purple-text text-darken-5">SRF</span></label></p>
+              <p><label><input class="with-gap"name="jobType"type="radio" value="Pay A&N"/><span class="deep-purple-text text-darken-5">Pay A&N</span></label></p>
+              <p><label><input class="with-gap"name="jobType"type="radio" value="SARF OC"/><span class="deep-purple-text text-darken-5">SARF OC</span></label></p>
+              <p><label><input class="with-gap"name="jobType"type="radio" value="Bug Monitor"/><span class="deep-purple-text text-darken-5">Bug Monitor</span></label></p>
+                </div>
+              <div class="column">
+                 <div id="tag" class="btn-small z-depth-3">
+                <i id="ijob" class="material-icons left">favorite_border</i>Engagement
+              </div>
+              <br>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="SPEI Activation"/><span class="deep-purple-text text-darken-5">SPEI Activation</span></label></p>
+              </div>
+              <div class="column">
+                <div id="tag" class="btn-small z-depth-3">
+                <i id="ijob" class="material-icons left">rotate_right</i>Lifecycle
+              </div> 
+              <br>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="Manual Dec"/><span class="deep-purple-text text-darken-5">Manual Dec</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="CURP"/><span class="deep-purple-text text-darken-5">CURP</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_card_delivered_not_received"/><span class="deep-purple-text text-darken-5">Card delivered not received</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_carrier_complaint"/><span class="deep-purple-text text-darken-5">Carrier Complaint</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_charge before the card delivery"/><span class="deep-purple-text text-darken-5">Charge before the card delivery</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_cross_delivery"/><span class="deep-purple-text text-darken-5">Cross Delivery</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_high_risk_area_or_zip_code_with_no _coverage"/><span class="deep-purple-text text-darken-5">High Risk Area or Zip Code with no Coverage</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_returns_without_delivery_attempts"/><span class="deep-purple-text text-darken-5">Returns without delivery attempts</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_three_failed_attempts"/><span class="deep-purple-text text-darken-5">Three Failed Attempts</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="taskmaster_lifecycle_deimos_tracking_stuck"/><span class="deep-purple-text text-darken-5">Tracking stuck</span></label></p>
+              </div> 
+               <div class="column">
+                <div id="tag" class="btn-small z-depth-3">
+                <i id="ijob" class="material-icons left">call_made</i>Outbound
+              </div> 
+              <br>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="Research"/><span class="deep-purple-text text-darken-5">Research</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="1st Callback"/><span class="deep-purple-text text-darken-5">1st Callback</span></label></p>
+               <p><label><input class="with-gap" name="jobType" type="radio" value="2nd Call"/><span class="deep-purple-text text-darken-5">2nd Call</span></label></p>
+              <p><label><input class="with-gap" name="jobType" type="radio" value="3rd Call"/><span class="deep-purple-text text-darken-5">3rd Call</span></label></p>
+              </div> 
+            </div> 
+          </div>
+        </div>
+      </form>
+      </div>
+      <div id="popup">
+                <p id="popup-message"></p>
+                <button id="aceptar">Aceptar</button>
+                <button id="cancelar">Cancelar</button>
+    </div>
+    </div>
+  </div>
+   <div><p style="color: black; text-align: center;">¿Necesitas ayuda o quieres reportar un problema? &#9660;</p></div>
+</div>
+    <!-- Footer -->
+<footer id="footerL" class="page-footer">
+      <div class="col 4 s12">
+        <div class="card-panel" id="footerP">
+          <div class="footer-row">
+            <h5 class="white-text" id="footerT">Out of Shuffle Jobs</h5>
+            <ul>
+              <li><a class="advertencia" id="linkA" href="https://hooks.slack.com/triggers/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">Slack Workflow</a></li>
+              <li><a class=" external grey-text text-lighten-4" id="linkB" href="https://numexico.myweduka.com/DocumentFind/Document?idDocument=4613">Weduka</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+    <!-- JS de Materialize -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+    <!-- Inicialización de select -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const selects = document.querySelectorAll('select');
+        M.FormSelect.init(selects);
+      });
+    
+    google.script.run.withSuccessHandler(function(dataUrl) {
+    document.getElementById('logo').src = dataUrl;
+    }).obtenerImagenBase64();
+
+const TIMEOUT_INACTIVIDAD = 60 * 60 * 1000; 
+
+let timeoutId;
+
+function resetearTimeout() {
+  clearTimeout(timeoutId);
+  timeoutId = setTimeout(expirarSesion, TIMEOUT_INACTIVIDAD);
+}
+
+function expirarSesion() {
+  window.location.href = "https://script.google.com/a/macros/nubank.com.br/s/AKfycbzQqg6iwGlOuY6dABexXaoR_KxViwseqabKjn0VFgpRUjyjjT-nF88w_bSq1U1yPOYOCw/exec";
+}
+
+document.addEventListener('mousemove', resetearTimeout);
+document.addEventListener('keydown', resetearTimeout);
+document.addEventListener('scroll', resetearTimeout);
+document.addEventListener('click', resetearTimeout);
+
+
+window.onload = () => {
+  resetearTimeout();
+}
+    </script>
+    <!-- Tu JS desde Tracking-JS.html -->
+    <?!= include("Tracking-JS"); ?>
+  </body>
+</html>
