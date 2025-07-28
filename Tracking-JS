@@ -1,0 +1,254 @@
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var elems = document.querySelectorAll('.sidenav');
+    var instances = M.Sidenav.init(elems);});
+
+  document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a.external').forEach(link => {
+  link.setAttribute('target', '_blank');});});
+
+   function mostrarUsuario() {
+    google.script.run.withSuccessHandler(usuario => {
+    document.getElementById("usuarioActual").innerText = usuario;
+    }).obtenerUsuarioActual();
+    }
+
+function deshabilitarCampos() {
+  document.getElementById("uuid").disabled = true;
+  document.getElementById("squad").disabled = true;
+  const radios = document.querySelectorAll('input[name="jobType"]');
+  radios.forEach(r => r.disabled = true);
+  const selects = document.querySelectorAll('select');
+  M.FormSelect.init(selects);
+}
+
+function habilitarCampos() {
+  document.getElementById("uuid").disabled = false;
+  document.getElementById("squad").disabled = false;
+  const radios = document.querySelectorAll('input[name="jobType"]');
+  radios.forEach(r => r.disabled = false);
+  const selects = document.querySelectorAll('select');
+  M.FormSelect.init(selects);
+}
+
+function guardarCampos() {
+  localStorage.setItem('uuid', document.getElementById("uuid").value);
+  localStorage.setItem('squad', document.getElementById("squad").value);
+  const selectedJobType = document.querySelector('input[name="jobType"]:checked');
+  localStorage.setItem('jobType', selectedJobType ? selectedJobType.value : '');
+}
+
+function limpiarCampos() {
+  document.getElementById("uuid").value = "";
+  document.getElementById("squad").value = "";
+
+  const radios = document.querySelectorAll('input[name="jobType"]');
+  radios.forEach(r => r.checked = false);
+  guardarCampos();
+  const selects = document.querySelectorAll('select');
+  M.FormSelect.init(selects);
+}
+
+function restaurarCampos() {
+  const uuidVal = localStorage.getItem('uuid');
+  const squadVal = localStorage.getItem('squad');
+  const jobTypeVal = localStorage.getItem('jobType');
+
+  if (uuidVal !== null) {
+    document.getElementById("uuid").value = uuidVal;
+  }
+
+  if (squadVal !== null) {
+    document.getElementById("squad").value = squadVal;
+  }
+
+  if (jobTypeVal) {
+    const radio = document.querySelector(`input[name="jobType"][value="${jobTypeVal}"]`);
+    if (radio) {
+      radio.checked = true;
+    }
+  }
+}
+
+// Función para verificar si hay cronómetro activo
+function verificarInicio() {
+  google.script.run.withSuccessHandler(function(inicioActivo) {
+    if (!inicioActivo) {
+      mostrarMensaje("Debes pulsar inicio antes de modificar o ingresar datos.", "rojo", "#c70000");
+      
+    }
+  }).obtenerInicioActivo();
+}
+
+document.getElementById("uuid").addEventListener('focus', verificarInicio);
+document.getElementById("uuid").addEventListener('input', verificarInicio);
+document.getElementById("squad").addEventListener('focus', verificarInicio);
+document.getElementById("squad").addEventListener('input', verificarInicio);
+const radiosJobType = document.querySelectorAll('input[name="jobType"]');
+radiosJobType.forEach(r => r.addEventListener('change', verificarInicio));
+
+
+  let intervalo;
+  let segundos = 0;
+
+  function iniciar() {
+  google.script.run.withSuccessHandler(msg => {
+    mostrarMensaje(msg, "amarillo", "#c79c00");
+    sincronizarCronometro();
+    habilitarCampos();
+    actualizarEstadoBotonInicio();
+  }).iniciarCronometro();
+}
+   function detener() {
+  google.script.run.withSuccessHandler(function(inicioActivo) {
+    if (!inicioActivo) {
+      mostrarMensaje("Pulsa Iniciar para habilitar los campos.", "rojo", "#c70000");
+      return;
+    }
+    const uuid = document.getElementById("uuid").value.trim();
+    const squad = document.getElementById("squad").value.trim();
+    const tipoJob = document.querySelector('input[name="jobType"]:checked')?.value || "";
+
+    if (!uuid || !squad || !tipoJob) {
+      let mensaje = "Completa todos los campos:";
+      if (!uuid) mensaje += " Customer ID,";
+      if (!squad) mensaje += " squad,";
+      if (!tipoJob) mensaje += " Tipo de Job,";
+      mostrarMensaje(mensaje, "rojo", "#c70000");
+      return; // Finaliza si faltan campos
+    }
+
+    google.script.run.withSuccessHandler(msg => {
+      mostrarMensaje(msg, "verde", "#15b500");
+      detenerVisual();
+      obtenerRegistros();
+      limpiarCampos();
+      deshabilitarCampos();
+      actualizarEstadoBotonInicio();
+    }).detenerCronometroConDatos(uuid, squad, tipoJob);
+  }).obtenerInicioActivo();
+}
+
+function mostrarMensaje(texto, tipo, colorHex) {
+  const mensajeEl = document.getElementById("mensaje");
+  const iconoEl = document.getElementById("mensaje-icono");
+  const textoEl = document.getElementById("mensaje-texto");
+  textoEl.innerText = texto;
+  mensajeEl.classList.remove("red-text", "green-text", "yellow-text", "text-darken-2");
+  iconoEl.className = "circle-icon"; // reset de clases
+  if (colorHex) {
+    mensajeEl.style.color = colorHex;
+  }
+  switch (tipo) {
+    case "rojo":
+      iconoEl.style.background = "linear-gradient(to right, #7d0600, #F44336)";
+      break;
+    case "verde":
+      iconoEl.style.background = "linear-gradient(to right, #0e3601, #4CAF50)";
+      break;
+    case "amarillo":
+      iconoEl.style.background = "linear-gradient(to right, #69611b, #FFEB3B)";
+      break;
+  }
+}
+  
+  function sincronizarCronometro() {
+    google.script.run.withSuccessHandler(timestamp => {
+      if (timestamp) {
+        const ahora = new Date().getTime();
+        segundos = Math.floor((ahora - timestamp) / 1000);
+        iniciarVisual();
+      } else {
+        detenerVisual();
+      }
+    }).obtenerInicioActivo();
+  }
+
+  function iniciarOReiniciar(tiempoInicio) {
+ if (tiempoInicio) {
+    habilitarCampos();
+  } else {
+    deshabilitarCampos();
+  }
+}
+
+  function iniciarVisual() {
+    clearInterval(intervalo);
+    intervalo = setInterval(() => {
+      segundos++;
+      document.getElementById("cronometro").innerText = formatearTiempo(segundos);
+    }, 1000);
+  }
+  function detenerVisual() {
+    clearInterval(intervalo);
+    document.getElementById("cronometro").innerText = "00:00:00";
+  }
+  function formatearTiempo(segundos) {
+    const h = String(Math.floor(segundos / 3600)).padStart(2, '0');
+    const m = String(Math.floor((segundos % 3600) / 60)).padStart(2, '0');
+    const s = String(segundos % 60).padStart(2, '0');
+    return `${h}:${m}:${s}`;
+  }
+  function obtenerRegistros() {
+    google.script.run.withSuccessHandler(datos => {
+      let html = "<table><tr><th>Usuario</th><th>Inicio</th><th>Fin</th><th>Duración (s)</th><th>Customer Id</th><th>squad</th><th>Job</th></tr>";
+      for (let i = 1; i < datos.length; i++) {
+        html += `<tr>
+          <td>${datos[i][0]}</td>
+          <td>${datos[i][1]}</td>
+          <td>${datos[i][2]}</td>
+          <td>${datos[i][3]}</td>
+          <td>${datos[i][4]}</td>
+          <td>${datos[i][5]}</td>
+          <td>${datos[i][6]}</td>
+          <td>${datos[i][7]}</td>
+        </tr>`;
+      }
+      html += "</table>";
+      document.getElementById("registros").innerHTML = html;
+    }).obtenerRegistros();
+  }
+
+function actualizarEstadoBotonInicio() {
+  google.script.run.withSuccessHandler(function(inicioActivo) {
+    const btnInicio = document.getElementById('startBtn');
+    if (inicioActivo) {
+      btnInicio.disabled = true;
+    } else {
+      btnInicio.disabled = false;
+    }
+  }).obtenerInicioActivo();
+}
+
+const enlace = document.getElementById('linkA');
+  const popup = document.getElementById('popup');
+  const mensajeTexto = document.getElementById('popup-message');
+  const aceptarBtn = document.getElementById('aceptar');
+  const cancelarBtn = document.getElementById('cancelar');
+
+  enlace.addEventListener('click', function(event) {
+    event.preventDefault();
+    mensajeTexto.textContent = 'Esta acción iniciará un workflow en Slack para solicitar soporte o reportar un problema ¿Deseas continuar?';
+    popup.style.display = 'block';
+
+    aceptarBtn.onclick = function() {
+      window.location.href = 'https://hooks.slack.com/triggers/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'; 
+    };
+
+    cancelarBtn.onclick = function() {
+      popup.style.display = 'none';
+        };
+  });
+
+ function init() {
+  mostrarUsuario();
+  sincronizarCronometro();
+  obtenerRegistros();
+  restaurarCampos();
+  actualizarEstadoBotonInicio();
+  google.script.run.withSuccessHandler(iniciarOReiniciar)
+    .obtenerInicioActivo();
+}
+
+window.addEventListener('load', init);
+</script>
